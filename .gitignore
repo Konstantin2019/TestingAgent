@@ -112,3 +112,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+app/static/sqlite_db/tasks.db

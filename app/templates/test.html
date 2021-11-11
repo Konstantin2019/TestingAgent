@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<section>
+   <row class="row justify-content-center" , style="color: cadetblue; 
+               font-size: large; 
+               font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">{{ surname }}-{{ type }}
+   </row>
+   <row class="row justify-content-center">
+      <span id="timer">Осталось...</span>
+   </row>
+   <row>
+      {% for i, question in questions %}
+      <div class="container">
+         <div class="jumbotron">
+            <table>
+               <tbody>
+                  <td id="{{ i }}" style="text-align: center;">{{ i+1 }}</td>
+                  <td id="question{{ i }}">
+                     <div class="container">
+                        <div class="col-sm" style="text-align: justify;">
+                           <span>{{ question }}</span>
+                        </div>
+                     </div>
+                  </td>
+                  <td>
+                     <div class="input-group flex-nowrap">
+                        <span class="input-group-text">Ответ: </span>
+                        <input id="answer{{ i }}" type="text" class="form-control" placeholder="Число"
+                           aria-label="Number">
+                        <button id="send_answer{{ i }}">Отправить</button>
+                        <script>
+                           $('#send_answer{{ i }}').on('click', () => {
+                              send_request(parseInt('{{ i }}'), true);
+                           });
+                           function send_request(index, notify) {
+                              $.ajax({
+                                 type: "POST",
+                                 url: $(location).attr('href'),
+                                 contentType: "application/json",
+                                 data: JSON.stringify({
+                                    'index': $(`#${index}`).text(),
+                                    'question': $(`#question${index}`).find('span').text(),
+                                    'student_answer': $(`#answer${index}`).val()
+                                 }),
+                                 success: (response) => {
+                                    if (notify) {
+                                       alert('Ответ успешно отправлен');
+                                    }
+                                 },
+                                 error: (err) => { alert(err.responseJSON); }
+                              });
+                           }
+                        </script>
+                     </div>
+                  </td>
+               </tbody>
+            </table>
+         </div>
+      </div>
+      {% endfor %}
+   </row>
+   <script>
+      $(document).ready(() => {
+         let delay = 1000 * 30;
+         update_time();
+         setInterval(() => { update_time(); }, delay);
+      });
+      function update_time() {
+         $.ajax({
+            type: "GET",
+            url: $(location).attr('href'),
+            data: { 'remaining_time': 'remaining_time' },
+            success: (response) => {
+               let time = $.parseJSON(response);
+               $('#timer').text(`Осталось ${time} мин`);
+               if (time == 0) {
+                  let row_count = $('table').find('tbody').length;
+                  for (let i = 0; i < row_count; i++) {
+                     send_request(i, false);
+                  }
+                  window.location.href = "/";
+               }
+            },
+            error: (err) => { console.error(err); }
+         });
+      }
+   </script>
+</section>
+{% endblock %}

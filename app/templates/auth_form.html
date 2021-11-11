@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div id="auth_form" class="container">
+    <div class="jumbotron">
+      <h2>Аутентификация</h2>
+      <div class="row justify-content-center">
+        <div class="flashes">
+          {% for field, errors in form.errors.items() %}
+          {{ ', '.join(errors) }}
+          {% endfor %}
+        </div>
+      </div>
+      <form method="POST" action="">
+        <div class="row">
+          <div class="col-sm">
+            {{ form.csrf_token() }}
+            {{ form.surname.label }}
+          </div>
+          <div class="col-sm">
+            {{ form.surname }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            {{ form.name.label }}
+          </div>
+          <div class="col-sm">
+            {{ form.name }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            {{ form.patronymic.label }}
+          </div>
+          <div class="col-sm">
+            {{ form.patronymic }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            {{ form.group.label }}
+          </div>
+          <div class="col-sm">
+            {{ form.group }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            {{ form.test.label }}
+          </div>
+          <div class="col-sm">
+            {{ form.test }}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            {{ form.teacher.label }}
+          </div>
+          <div class="col-sm">
+            {{ form.teacher }}
+          </div>
+        </div>
+        <div class="row justify-content-center">
+          {{ form.submit(class="btn btn-primary") }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

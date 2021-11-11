@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block head %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/admin_frontend.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<section>
+   <div class="container">
+      <div class="jumbotron" style="margin-top: 2%;">
+         <h1>Панель преподавателя</h1>
+         <div class="row justify-content-around">
+            <div class="col-sm">
+               <div class="input-group">
+                  <select id="year_sel" class="form-control">
+                     <option selected disabled>Выберите год...</option>
+                     {% for year in years %}
+                     <option value="{{ year.id }}">{{ year.year_name }}</option>
+                     {% endfor %}
+                  </select>
+               </div>
+            </div>
+            <div class="col-sm">
+               <div class="input-group">
+                  <select id="group_sel" class="form-control">
+                     <option selected disabled>Выберите группу...</option>
+                     {% for group in groups %}
+                     <option value="{{ group.id }}">{{ group.group_name }}</option>
+                     {% endfor %}
+                  </select>
+                  <span class="input-group-btn">
+                     <button id="add_group" class="btn btn-default" type="button">
+                        <span style="color: green">
+                           <i class="far fa-plus-square fa-lg"></i>
+                        </span>
+                     </button>
+                     <button id="del_group" class="btn btn-default" type="button">
+                        <span style="color: red">
+                           <i class="fas fa-minus fa-lg"></i>
+                        </span>
+                     </button>
+                  </span>
+                  <input id="gr_inp" type="text" style="visibility: hidden;">
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</section>
+<section id="content">
+   <div class="container">
+      <div class="jumbotron">
+         <table id="students_lst" class="table">
+            <thead>
+               <tr>
+                  <th scope="col">№</th>
+                  <th scope="col">Фамилия</th>
+                  <th scope="col">Имя</th>
+                  <th scope="col">Отчество</th>
+                  <th scope="col">Результат РК1</th>
+                  <th scope="col">Результат РК2</th>
+                  <th scope="col"></th>
+               </tr>
+            </thead>
+            <tbody></tbody>
+         </table>
+      </div>
+   </div>
+</section>
+{% endblock %}

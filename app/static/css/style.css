@@ -1,0 +1,99 @@
+h1 {
+  text-align: center;
+  margin-bottom: 2%;
+  color: lightslategray;
+}
+
+h2 {
+  text-align: center;
+  font-style: italic;
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+
+input {
+  width: 80%;
+}
+
+table, th, td {
+  text-align: center;
+}
+
+.jumbotron {
+  margin: 0.2%;
+}
+
+.flashes {
+  background-color: aquamarine;
+  color: brown;
+}
+
+.page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.far {
+  font-family: fontawesome !important;
+  font-style: normal;
+}
+
+.fas {
+  font-family: fontawesome !important;
+  font-style: normal;
+}
+
+.row {
+  padding-top: 0%;
+  padding-bottom: 0%;
+}
+
+.col-sm {
+  text-align: center;
+}
+
+.navbar .navbar-brand {
+  color: cadetblue;
+  font-size: xx-large;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+@media (min-width: 575.98px) {
+  .container {
+    max-width: 540px;
+    margin: auto;
+    padding: 0;
+  }
+  #auth_form {
+    width: 100%;
+  }
+}
+
+@media (min-width: 767.98px) {
+  .container {
+    max-width: 720px;
+  }
+  #auth_form {
+    width: 85%;
+  }
+}
+
+@media (min-width: 991.98px) {
+  .container {
+    max-width: 960px;
+  }
+  #auth_form {
+    width: 70%;
+  }
+}
+
+@media (min-width: 1199.98px) {
+  .container {
+    max-width: 1140px;
+  }
+  #auth_form {
+    width: 50%;
+  }
+}
