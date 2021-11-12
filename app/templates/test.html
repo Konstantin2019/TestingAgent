@@ -52,7 +52,10 @@
                                        alert('Ответ успешно отправлен');
                                     }
                                  },
-                                 error: (err) => { alert(err.responseJSON); }
+                                 error: (err) => {
+                                    if (err.responseJSON != undefined) { alert(err.responseJSON); }
+                                    else { alert('Сервер не отвечает...'); }
+                                 }
                               });
                            }
                         </script>

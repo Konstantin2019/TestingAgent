@@ -30,8 +30,8 @@ def __rk1_task2_gen():
             'Answer': {'Smax': Smax, 'Smin': Smin, 'Sm': round(Sm), 'Ts': Ts}}
   EI = randint(0, 200)
   ES = EI + randint(20, 100)
-  ei = randint(-200, 0)
-  es = ei + randint(20, 100)
+  es = randint(-200, 0)
+  ei = es - randint(20, 100)
   return __inner_gen__(ES=ES, EI=EI, es=es, ei=ei)
 
 def __rk1_task3_gen():
@@ -55,8 +55,8 @@ def __rk1_task4_gen():
             'Answer': {'Nmax': round(Nmax), 'Nmin': round(Nmin), 'Nm': round(Nm), 'Tn': round(Tn)}}
   ei = randint(0, 200)
   es = ei + randint(20, 100)
-  EI = randint(-200, 0)
-  ES = EI + randint(20, 100)
+  ES = randint(-200, 0)
+  EI = ES - randint(20, 100)
   return __inner_gen__(ES=ES, EI=EI, es=es, ei=ei)
 
 def __rk1_task5_gen():

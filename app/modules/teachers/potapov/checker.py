@@ -10,7 +10,7 @@ class RK1_Checker():
         try:
             correct_answer = loads(self.correct_answer)
             self.answer = self.answer.replace(',', '.')
-            spam = re.split('; |: |;|:| |/|&', self.answer)
+            spam = re.split('; |: |/ |;|:| |/|&', self.answer)
             if index == 1:
                 if len(spam) != 2:
                     return 0, self.answer
@@ -33,10 +33,19 @@ class RK1_Checker():
             elif index == 3:
                 if len(spam) != 2:
                     return 0, self.answer
-                student_answer = { 'k1': float(spam[0]), 'k2': float(spam[1]) }
+                if correct_answer['k1'] < correct_answer['k2']:
+                    student_answer = { 'k1': float(spam[0]), 'k2': float(spam[1]) } \
+                                     if float(spam[0]) < float(spam[1]) \
+                                     else { 'k2': float(spam[0]), 'k1': float(spam[1]) }
+                elif correct_answer['k2'] < correct_answer['k1']:
+                    student_answer = { 'k2': float(spam[0]), 'k1': float(spam[1]) } \
+                                     if float(spam[0]) < float(spam[1]) \
+                                     else { 'k1': float(spam[0]), 'k2': float(spam[1]) }
+                else:
+                    student_answer = { 'k1': float(spam[0]), 'k2': float(spam[1]) }
                 k1_dif = (correct_answer['k1'] - student_answer['k1']) / correct_answer['k1']
                 k2_dif = (correct_answer['k2'] - student_answer['k2']) / correct_answer['k2']
-                if abs(k1_dif) < 0.05 and abs(k2_dif) < 0.05 and student_answer['k1'] < student_answer['k2']:
+                if abs(k1_dif) < 0.05 and abs(k2_dif) < 0.05:
                     return 1, dumps(student_answer)
                 else: 
                     return 0, dumps(student_answer)
