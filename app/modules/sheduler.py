@@ -1,5 +1,5 @@
 from app import app, sql_provider, store
-from app.models.dto import Student, RK1, RK2
+from app.models.shemas import Student, RK1, RK2
 from time import sleep
 
 def do_on_complete(student_id, test_name, job_name):

@@ -4,7 +4,7 @@ from flask import render_template, request, redirect, jsonify
 from flask.helpers import flash, make_response, url_for
 from datetime import datetime
 from app.modules.sheduler import do_on_complete
-from app.models.dto import Group, Student, Year, RK1, RK2
+from app.models.shemas import Group, Student, Year, RK1, RK2
 from app.models.view_models import StudentAuth, AdminAuth
 from app import sql_provider, store
 from app.modules.task_selector import select
@@ -156,6 +156,9 @@ def init_controllers(app):
         admin_login = request.cookies.get('admin_login')
         admin_password = request.cookies.get('admin_password')
         if not admin_login and not admin_password:
+            return redirect(url_for('admin_auth'))
+        correct_hash_code = sha1(str.encode(app.config['ADMIN_PASSWORD'])).hexdigest()
+        if admin_login != app.config['ADMIN_LOGIN'] and admin_password != correct_hash_code:
             return redirect(url_for('admin_auth'))
         if request.method == "GET":
             if not request.args:

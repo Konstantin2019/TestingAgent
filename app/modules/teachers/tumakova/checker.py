@@ -24,8 +24,8 @@ class RK1_Checker():
             elif index == 2:
                 if len(spam) != 4:
                     return 0, self.answer
-                student_answer = { 'Smax': int(spam[0]), 'Smin': int(spam[1]), \
-                                   'Sm': int(spam[2]), 'Ts': int(spam[3]) }
+                student_answer = { 'Smax': float(spam[0]), 'Smin': float(spam[1]), \
+                                   'Sm': float(spam[2]), 'Ts': float(spam[3]) }
                 Smax_dif = (correct_answer['Smax'] - student_answer['Smax']) / correct_answer['Smax']
                 Smin_dif = (correct_answer['Smin'] - student_answer['Smin']) / correct_answer['Smin']
                 Sm_dif = (correct_answer['Sm'] - student_answer['Sm']) / correct_answer['Sm']
@@ -57,8 +57,8 @@ class RK1_Checker():
             elif index == 4:
                 if len(spam) != 4:
                     return 0, self.answer
-                student_answer = { 'Nmax': int(spam[0]), 'Nmin': int(spam[1]), \
-                                   'Nm': int(spam[2]), 'Tn': int(spam[3]) }
+                student_answer = { 'Nmax': float(spam[0]), 'Nmin': float(spam[1]), \
+                                   'Nm': float(spam[2]), 'Tn': float(spam[3]) }
                 Nmax_dif = (correct_answer['Nmax'] - student_answer['Nmax']) / correct_answer['Nmax']
                 Nmin_dif = (correct_answer['Nmin'] - student_answer['Nmin']) / correct_answer['Nmin']
                 Nm_dif = (correct_answer['Nm'] - student_answer['Nm']) / correct_answer['Nm']

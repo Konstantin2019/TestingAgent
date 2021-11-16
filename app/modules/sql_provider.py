@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from app.models.dto import Year, Group, Student, RK1, RK2
+from app.models.shemas import Year, Group, Student, RK1, RK2
 from os import getenv
 
 if getenv('SQLALCHEMY_DATABASE_URI') == 'sqlite:///':
