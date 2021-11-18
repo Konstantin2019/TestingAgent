@@ -15,7 +15,7 @@ class DevelopmentConfig(BaseConfig):
     SECRET_KEY = getenv('SECRET_KEY')
     ADMIN_LOGIN = getenv('ADMIN_LOGIN')
     ADMIN_PASSWORD = getenv('ADMIN_PASSWORD')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(dir_path, 'app/static/sqlite_db/tasks.db')
+    SQLALCHEMY_DATABASE_URI = getenv('SQLALCHEMY_DATABASE_URI') + path.join(dir_path, 'app/static/sqlite_db/tasks.db')
     FLASK_ENV = 'development'
     ENV = FLASK_ENV
     DEBUG = True

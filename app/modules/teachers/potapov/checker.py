@@ -9,7 +9,7 @@ class RK1_Checker():
     def __call__(self, index):
         try:
             correct_answer = loads(self.correct_answer)
-            self.answer = self.answer.replace(',', '.')
+            self.answer = self.answer.replace(',', '.').strip()
             spam = re.split('; |: |/ |;|:| |/|&', self.answer)
             if index == 1:
                 if len(spam) != 2:
