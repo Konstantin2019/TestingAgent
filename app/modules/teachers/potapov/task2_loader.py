@@ -1,4 +1,5 @@
 from random import gauss, randint, uniform, choice
+from collections import namedtuple
 
 #region inner_gen_funcs
 def __rk2_task1_gen():
@@ -48,9 +49,46 @@ def __rk2_task1_gen():
                          fa=uniform(0.005, 0.02) )    
 
 def __rk2_task2_gen():
-    def __inner_gen__():
-        pass
-
+    F = {'8': 80, '7': 70, '6': 60}
+    f = {'8': 40, '7': 30, '6': 20}
+    controlled_gear = namedtuple('gear', 'Fr fr')
+    def __inner_gear_gen__():
+        t = randint(6,8)
+        p = randint(6,8)
+        k = randint(6,8)
+        jnmin = ['A','B','C','D','E','H']
+        Tjn = ['a','b','c','d','e','h']
+        if t == p and t == k:
+            return str(t)+choice(jnmin)+choice(Tjn)
+        else:
+            return str(t)+"-"+str(p)+"-"+str(k)+choice(jnmin)+choice(Tjn)
+    def __inner_gear_parse__(gear):
+        if len(gear) > 3:
+            t = gear[0]
+            p = gear[2]
+            k = gear[4]
+            jnmin = gear[5]
+            Tjn = gear[6]
+        else:
+            t = gear[0]
+            p = t
+            k = t
+            jnmin = gear[1]
+            Tjn = gear[2]
+        return {'t': t, 'p': p, 'k': k, 'jnmin': jnmin, 'Tjn': Tjn}
+    def __inner_task_gen__():
+        gear = __inner_gear_gen__()
+        gears = [controlled_gear(Fr=randint(55, 85), fr=randint(15, 45)) for i in range(3)]
+        parsed_gear = __inner_gear_parse__(gear)
+        returned_dict = {'Task': {'accuracy': gear, 'F': F, 'f': f, 'gears': gears}, 'Answer': []}
+        for g in gears:
+            if g.Fr <= F[parsed_gear['t']] and g.fr <= f[parsed_gear['k']]:
+                returned_dict['Answer'].append('Годно')
+            else:
+                returned_dict['Answer'].append('Брак')
+        return returned_dict
+    return __inner_task_gen__()
+        
 def __rk2_task3_gen():
     def __inner_gen__():
         pass
