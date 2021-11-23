@@ -1,5 +1,6 @@
 from random import gauss, randint, uniform, choice
 from collections import namedtuple
+from numpy import mean, std
 
 #region inner_gen_funcs
 def __rk2_task1_gen():
@@ -80,18 +81,41 @@ def __rk2_task2_gen():
         gear = __inner_gear_gen__()
         gears = [controlled_gear(Fr=randint(55, 85), fr=randint(15, 45)) for i in range(3)]
         parsed_gear = __inner_gear_parse__(gear)
-        returned_dict = {'Task': {'accuracy': gear, 'F': F, 'f': f, 'gears': gears}, 'Answer': []}
+        returned_dict = {'Task': {'accuracy': gear, 'F': F, 'f': f, 'gears': gears}, 'Answer': {'valid': []}}
         for g in gears:
             if g.Fr <= F[parsed_gear['t']] and g.fr <= f[parsed_gear['k']]:
-                returned_dict['Answer'].append('Годно')
+                returned_dict['Answer']['valid'].append('годно')
             else:
-                returned_dict['Answer'].append('Брак')
+                returned_dict['Answer']['valid'].append('брак')
         return returned_dict
     return __inner_task_gen__()
         
 def __rk2_task3_gen():
-    def __inner_gen__():
-        pass
+    def __inner_gen__(mu, sigma, delta, T, n):
+        operand = choice(['+', '-'])
+        if operand == '+':
+            X = [gauss(mu, sigma) + delta for i in range(n)]
+        if operand == '-':
+            X = [gauss(mu, sigma) - delta for i in range(n)]
+        P = choice([0.95, 0.99])
+        if P == 0.95:
+            k = 2
+        else:
+            k = 3
+        Xmin = mu - T/2
+        Xmax = mu + T/2
+        Xqmin = mean(X) - k*std(X, ddof=1)
+        Xqmax = mean(X) + k*std(X, ddof=1)
+        returned_dict = {'Task': {'X': X, 'P': P, 'n': n}, 'Answer': {'valid': ''}}
+        if Xqmin >= Xmin and Xqmax <= Xmax:
+            returned_dict['Answer']['valid'] = 'годно'
+        else:
+            returned_dict['Answer']['valid'] = 'брак'
+    mu = randint(10,100)
+    T = uniform(0.03,0.1)
+    sigma = T/choice([4,5,6])
+    delta = uniform(0.002,0.01)
+    return __inner_gen__(mu=mu, sigma=sigma, delta=delta, T=T, n=randint(30,50))
 
 def __rk2_task4_gen():
     def __inner_gen__():
