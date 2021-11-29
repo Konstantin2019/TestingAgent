@@ -1,6 +1,7 @@
 from random import gauss, randint, uniform, choice
 from collections import namedtuple
 from numpy import mean, std
+from json import load, dumps
 
 #region inner_gen_funcs
 def __rk2_task1_gen():
@@ -37,7 +38,7 @@ def __rk2_task1_gen():
                valid = 'годно'
             else:
                valid = 'брак'
-        return {'Task': {'type': thread_type, 'd': d, 'd2': d2, 'd1': d1, \
+        return {'Task': {'type': thread_type, 'd': d, 'd2': d2, 'd1': d1, 'T': T, \
                 'dr': dr, 'd2r': d2r, 'd1r': d1r, 'fp': fp, 'fa': fa}, \
                 'Answer': {'valid': valid}
                }
@@ -164,17 +165,74 @@ def __rk2_task4_gen():
 
 #region inner_prepare_funcs
 def __rk2_task1_prepare(text, values):
-    pass
+    text = text.replace('{d(D) = }', 'd(D) = ' + str(values['Task']['d'])) \
+               .replace('{d2(D2) = }', 'd2(D2) = ' + str(values['Task']['d2'])) \
+               .replace('{d1(D1) = }', 'd1(D1) = ' + str(values['Task']['d1'])) \
+               .replace('{T = }', 'T = ' + str(values['Task']['T'])) \
+               .replace('{ }', str(values['Task']['type'])) \
+               .replace('{dr(Dr) = }', 'dr(Dr) = ' + str(values['Task']['dr'])) \
+               .replace('{d2r(D2r) = }', 'd2r(D2r) = ' + str(values['Task']['d2r'])) \
+               .replace('{d1r(D1r) = }', 'd1r(D1r) = ' + str(values['Task']['d1r'])) \
+               .replace('{fp = }', 'fp = ' + str(values['Task']['fp'])) \
+               .replace('{fa = }', 'fa = ' + str(values['Task']['fa']))   
+    answer = { 'valid': values['Answer']['valid'] }
+    return { text : dumps(answer) }
     
 def __rk2_task2_prepare(text, values):
-    pass
+    text = text.replace('{ }', str(values['Task']['accuracy'])) \
+               .replace('{F = }', 'F = ' + str(values['Task']['F'])) \
+               .replace('{f = }', 'f = ' + str(values['Task']['f'])) \
+               .replace('{Колесо 1 = }', 'Колесо 1 = ' + str(values['Task']['gear1'])) \
+               .replace('{Колесо 2 = }', 'Колесо 2 = ' + str(values['Task']['gear2'])) \
+               .replace('{Колесо 3 = }', 'Колесо 3 = ' + str(values['Task']['gear3'])) 
+    answer = { 'valid': values['Answer']['valid'] }
+    return { text : dumps(answer) }
 
 def __rk2_task3_prepare(text, values):
-    pass
+    text = text.replace('{n = }', 'n = ' + str(values['Task']['n'])) \
+               .replace('{X = []}', 'X = ' + str(values['Task']['X'])) \
+               .replace('{P = }', 'P = ' + str(values['Task']['P']))
+    answer = { 'valid': values['Answer']['valid'] }
+    return { text : dumps(answer) }
 
 def __rk2_task4_prepare(text, values):
-    pass
+    text = text.replace('{R1 = }', 'R1 = ' + str(values['Task']['R1'])) \
+               .replace('{EsR1 = }', 'EsR1 = ' + str(values['Task']['EsR1'])) \
+               .replace('{EiR1 = }', 'EiR1 = ' + str(values['Task']['EiR1'])) \
+               .replace('{R2 = }', 'R2 = ' + str(values['Task']['R2'])) \
+               .replace('{EsR2 = }', 'EsR2 = ' + str(values['Task']['EsR2'])) \
+               .replace('{EiR2 = }', 'EiR2 = ' + str(values['Task']['EiR2'])) \
+               .replace('{R3 = }', 'R3 = ' + str(values['Task']['R3'])) \
+               .replace('{EsR3 = }', 'EsR3 = ' + str(values['Task']['EsR3'])) \
+               .replace('{EiR3 = }', 'EiR3 = ' + str(values['Task']['EiR3'])) \
+               .replace('{Rsum = }', 'Rsum = ' + str(values['Task']['Rs'])) \
+               .replace('{EsRsum = }', 'EsRsum = ' + str(values['Task']['EsRs'])) \
+               .replace('{EiRsum = }', 'EiRsum = ' + str(values['Task']['EiRs']))  
+    answer = { 'Rkmin': values['Answer']['Rkmin'], 'Rkmax': values['Answer']['Rkmax'] }
+    return { text : dumps(answer) }
 #endregion
 
 def load_tasks(filepath):
-    pass
+    try:
+        with open(filepath, encoding='utf-8', mode='r') as fp:
+            rk2_tasks = load(fp) 
+        rk2_task1_text = rk2_tasks['Задание №1']
+        rk2_task2_text = rk2_tasks['Задание №2']
+        rk2_task3_text = rk2_tasks['Задание №3']
+        rk2_task4_text = rk2_tasks['Задание №4']
+        rk2_task1_values = __rk2_task1_gen()
+        rk2_task2_values = __rk2_task2_gen()
+        rk2_task3_values = __rk2_task3_gen()
+        rk2_task4_values = __rk2_task4_gen()
+        result = {}
+        rk2_task1 = __rk2_task1_prepare(rk2_task1_text, rk2_task1_values)
+        result.update(rk2_task1)
+        rk2_task2 = __rk2_task2_prepare(rk2_task2_text, rk2_task2_values)
+        result.update(rk2_task2)
+        rk2_task3 = __rk2_task3_prepare(rk2_task3_text, rk2_task3_values)
+        result.update(rk2_task3)
+        rk2_task4 = __rk2_task4_prepare(rk2_task4_text, rk2_task4_values)
+        result.update(rk2_task4)
+        return result
+    except Exception as error:
+        return error

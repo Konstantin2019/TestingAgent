@@ -53,13 +53,13 @@ def init_controllers(app):
     def test(student_id: int, rk_choice: str, teacher: str):
         test_name = rk_choice.lower()
         checker, task1_loader, task2_loader = select(teacher)
+        sheduler_id = f'{test_name}_{student_id}_{teacher}'
         if request.method == 'GET':
             student = sql_provider.get(Student, student_id)
             if request.args.get('remaining_time'):
                 remaining_time = student.rk1_remaining_time if test_name == 'rk1' \
                                  else student.rk2_remaining_time
                 return make_response(json.dumps(remaining_time), 200)
-            sheduler_id = f'{test_name}_{student_id}_{teacher}'
             interval = store['interval']
             if test_name == 'rk1':
                 if (student.rk1_status == 'Done'):
@@ -108,6 +108,9 @@ def init_controllers(app):
                 rk_status = student.rk1_status if test_name == 'rk1' else student.rk2_status
                 if rk_status == 'Done':
                     return make_response(jsonify('Время на выполнение истекло!'), 503)
+                if 'status' in data and data['status'] == 'finish':
+                    do_on_complete(student_id, test_name, sheduler_id)
+                    return make_response('', 200)
                 if 'student_answer' in data and data['student_answer']:
                     student_answer = data['student_answer']
                     test_cls = RK1 if test_name == 'rk1' else RK2
