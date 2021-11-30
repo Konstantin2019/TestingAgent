@@ -75,7 +75,7 @@ def init_controllers(app):
                                                 args=[student_id, test_name, sheduler_id], id=sheduler_id)
                         print(f'Планировщик с именем {sheduler_id} начал работу...')
                     except Exception:
-                        return make_response('<h1>Ошибка загрузки РК№2</h1>', 404)
+                        return make_response('<h1>Ошибка загрузки РК№1</h1>', 404)
                 else:
                     rk1_obj_list = sql_provider.query(RK1).filter_by(student_id=student_id).all()
                 questions = [obj.question for obj in rk1_obj_list]
@@ -98,7 +98,7 @@ def init_controllers(app):
                 else:
                     rk2_obj_list = sql_provider.query(RK2).filter_by(student_id=student_id).all()
                 questions = [obj.question for obj in rk2_obj_list]
-                return render_template('test.html', surname=student.surname, type='РК№2', questions=rk2)
+                return render_template('test.html', surname=student.surname, type='РК№2', questions=enumerate(questions))
             else:
                 return make_response('<h1>Что-то не так с запросом:(</h1>', 404)
         if request.method == 'POST':
@@ -107,9 +107,9 @@ def init_controllers(app):
                 student = sql_provider.get(Student, student_id)
                 rk_status = student.rk1_status if test_name == 'rk1' else student.rk2_status
                 if rk_status == 'Done':
-                    return make_response(jsonify('Время на выполнение истекло!'), 503)
+                    return make_response(jsonify('Рубежный контроль окончен!'), 200)
                 if 'status' in data and data['status'] == 'finish':
-                    do_on_complete(student_id, test_name, sheduler_id)
+                    sql_provider.update(Student, student_id, {'rk1_remaining_time': 0})
                     return make_response('', 200)
                 if 'student_answer' in data and data['student_answer']:
                     student_answer = data['student_answer']

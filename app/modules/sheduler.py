@@ -2,7 +2,7 @@ from app import app, sql_provider, store
 from app.models.shemas import Student, RK1, RK2
 from time import sleep
 
-def do_on_complete(student_id, test_name, job_name, cancel=False):
+def do_on_complete(student_id, test_name, job_name):
     def __finallize__():
         total_score = 0
         try:
@@ -22,13 +22,9 @@ def do_on_complete(student_id, test_name, job_name, cancel=False):
     student = sql_provider.get(Student, student_id)
     remaining_time = student.rk1_remaining_time if test_name == 'rk1' \
                      else student.rk2_remaining_time
-    if remaining_time == 0 and not cancel:
+    if remaining_time == 0:
         sleep(60)
         __finallize__()
-    elif remaining_time != 0 and cancel:
-        data = {'rk1_remaining_time': 0}
-        sql_provider.update(Student, student_id, data)
-        __finallize__()
-    elif remaining_time != 0 and not cancel:
+    else:
         data = {'rk1_remaining_time': remaining_time - store['interval']}
         sql_provider.update(Student, student_id, data)

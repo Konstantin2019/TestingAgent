@@ -1,4 +1,4 @@
-from os import path, environ, getenv, urandom
+from os import path, environ, getenv
 from dotenv import load_dotenv
 
 dir_path = path.abspath(path.dirname(__file__))

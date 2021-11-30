@@ -68,24 +68,6 @@
       {% endfor %}
       <row class="row justify-content-center">
          <button id="finish">Завершить</button>
-         <script>
-            $(document).ready(() => {
-               $('#finish').click(() => {
-                  $.ajax({
-                     type: "POST",
-                     url: $(location).attr('href'),
-                     data: JSON.stringify({
-                        "status": "finish"
-                     }),
-                     success: (response) => { alert('Рубежный контроль окончен. Можно закрыть страницу...'); },
-                     error: (err) => {
-                        if (err.responseJSON != undefined) { alert(err.responseJSON); }
-                        else { alert('Сервер не отвечает...'); }
-                     }
-                  });
-               });
-            });
-         </script>
       </row>
    </row>
    <script>
@@ -93,6 +75,21 @@
          let delay = 1000 * 30;
          update_time();
          setInterval(() => { update_time(); }, delay);
+         $('#finish').click(() => {
+            $.ajax({
+               type: "POST",
+               url: $(location).attr('href'),
+               contentType: "application/json",
+               data: JSON.stringify({
+                  'status': 'finish'
+               }),
+               success: (response) => { alert('Рубежный контроль окончен. Можно закрыть страницу...'); },
+               error: (err) => {
+                  if (err.responseJSON != undefined) { alert(err.responseJSON); }
+                  else { alert('Сервер не отвечает...'); }
+               }
+            });
+         });
       });
       function update_time() {
          $.ajax({

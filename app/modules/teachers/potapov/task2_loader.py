@@ -83,18 +83,18 @@ def __rk2_task2_gen():
         gear = __inner_gear_gen__()
         gears = [controlled_gear(Fr=randint(55, 85), fr=randint(15, 45)) for i in range(3)]
         parsed_gear = __inner_gear_parse__(gear)
-        returned_dict = {'Task': {'accuracy': gear, 'F': F, 'f': f, \
-                         'gear1': (f'Fr={gears[0].Fr}', f'fr={gears[0].fr}'), \
-                         'gear2': (f'Fr={gears[1].Fr}', f'fr={gears[1].fr}'), \
-                         'gear3': (f'Fr={gears[2].Fr}', f'fr={gears[2].fr}'), \
-                         'Answer': {'valid': []}}
-                        }
+        check_lst = []                
         for g in gears:
             if g.Fr <= F[parsed_gear['t']] and g.fr <= f[parsed_gear['k']]:
-                returned_dict['Answer']['valid'].append('годно')
+                check_lst.append('годно')
             else:
-                returned_dict['Answer']['valid'].append('брак')
-        return returned_dict
+                check_lst.append('брак')
+        return {'Task': {'accuracy': gear, 'F': F, 'f': f, \
+                         'gear1': (f'Fr={gears[0].Fr}', f'fr={gears[0].fr}'), \
+                         'gear2': (f'Fr={gears[1].Fr}', f'fr={gears[1].fr}'), \
+                         'gear3': (f'Fr={gears[2].Fr}', f'fr={gears[2].fr}')}, \
+                         'Answer': {'valid': check_lst}
+               }
     return __inner_task_gen__()
         
 def __rk2_task3_gen():
