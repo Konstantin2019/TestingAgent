@@ -83,7 +83,7 @@ def init_controllers(app):
             elif test_name == 'rk2':
                 if (student.rk2_status == 'Done'):
                     return redirect('error.html')
-                if (student.rk1_status != 'Started'):
+                if (student.rk2_status != 'Started'):
                     try:
                         rk2 = task2_loader.load_tasks(f'app/static/files/{teacher}/rk2.json')
                         rk2_obj_list = [RK2(question=text, correct_answer=answer, student_id=student_id, score=0)
@@ -109,8 +109,9 @@ def init_controllers(app):
                 if rk_status == 'Done':
                     return make_response(jsonify('Рубежный контроль окончен!'), 200)
                 if 'status' in data and data['status'] == 'finish':
-                    sql_provider.update(Student, student_id, {'rk1_remaining_time': 0})
-                    return make_response('', 200)
+                    patch = {'rk1_remaining_time': 0} if test_name == 'rk1' else {'rk2_remaining_time': 0}
+                    sql_provider.update(Student, student_id, patch)
+                    return make_response(jsonify('Рубежный контроль окончен!'), 200)
                 if 'student_answer' in data and data['student_answer']:
                     student_answer = data['student_answer']
                     test_cls = RK1 if test_name == 'rk1' else RK2

@@ -83,7 +83,10 @@
                data: JSON.stringify({
                   'status': 'finish'
                }),
-               success: (response) => { alert('Рубежный контроль окончен. Можно закрыть страницу...'); },
+               success: (response) => {
+                  alert(response);
+                  update_time();
+                },
                error: (err) => {
                   if (err.responseJSON != undefined) { alert(err.responseJSON); }
                   else { alert('Сервер не отвечает...'); }

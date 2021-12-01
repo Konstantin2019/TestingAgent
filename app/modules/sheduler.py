@@ -10,9 +10,9 @@ def do_on_complete(student_id, test_name, job_name):
                      if test_name == 'rk1' else sql_provider.query(RK2).filter_by(student_id=student_id).all()
             rk_scores = [item.score if item else 0 for item in rk_objs]
             total_score = sum(rk_scores)
-            data = {'rk1_status': 'Done', 'rk1_score': total_score} \
+            patch = {'rk1_status': 'Done', 'rk1_score': total_score} \
                     if test_name == 'rk1' else {'rk2_status': 'Done', 'rk2_score': total_score}
-            sql_provider.update(Student, student_id, data)
+            sql_provider.update(Student, student_id, patch)
         except Exception as err:
             total_score = 0
             print(err)
@@ -26,5 +26,6 @@ def do_on_complete(student_id, test_name, job_name):
         sleep(60)
         __finallize__()
     else:
-        data = {'rk1_remaining_time': remaining_time - store['interval']}
-        sql_provider.update(Student, student_id, data)
+        patch = {'rk1_remaining_time': remaining_time - store['interval']} if test_name == 'rk1' \
+               else {'rk2_remaining_time': remaining_time - store['interval']}
+        sql_provider.update(Student, student_id, patch)

@@ -47,8 +47,8 @@ def __rk2_task1_gen():
     d2, d1 = __inner_calculator__(d, P)
     T = round(uniform(0.02, 0.1), 3)
     return __inner_gen__(d=d, P=P, T=T, \
-                         dr=d+round(uniform(-T/2, T/2), 3), d2r=d2+round(uniform(-T/2, T/2), 3), \
-                         d1r=d1+round(uniform(-T/2, T/2), 3),
+                         dr=round(d+uniform(-T/2, T/2), 3), d2r=round(d2+uniform(-T/2, T/2), 3), \
+                         d1r=round(d1+uniform(-T/2, T/2), 3),
                          fp=round(uniform(0.005, 0.02), 3), fa=round(uniform(0.005, 0.02), 3))    
 
 def __rk2_task2_gen():
@@ -176,7 +176,7 @@ def __rk2_task1_prepare(text, values):
                .replace('{fp = }', 'fp = ' + str(values['Task']['fp'])) \
                .replace('{fa = }', 'fa = ' + str(values['Task']['fa']))   
     answer = { 'valid': values['Answer']['valid'] }
-    return { text : dumps(answer) }
+    return { text : dumps(answer, ensure_ascii=False) }
     
 def __rk2_task2_prepare(text, values):
     text = text.replace('{ }', str(values['Task']['accuracy'])) \
@@ -186,14 +186,14 @@ def __rk2_task2_prepare(text, values):
                .replace('{Колесо 2 = }', 'Колесо 2 = ' + str(values['Task']['gear2'])) \
                .replace('{Колесо 3 = }', 'Колесо 3 = ' + str(values['Task']['gear3'])) 
     answer = { 'valid': values['Answer']['valid'] }
-    return { text : dumps(answer) }
+    return { text : dumps(answer, ensure_ascii=False) }
 
 def __rk2_task3_prepare(text, values):
     text = text.replace('{n = }', 'n = ' + str(values['Task']['n'])) \
                .replace('{X = []}', 'X = ' + str(values['Task']['X'])) \
                .replace('{P = }', 'P = ' + str(values['Task']['P']))
     answer = { 'valid': values['Answer']['valid'] }
-    return { text : dumps(answer) }
+    return { text : dumps(answer, ensure_ascii=False) }
 
 def __rk2_task4_prepare(text, values):
     text = text.replace('{R1 = }', 'R1 = ' + str(values['Task']['R1'])) \
