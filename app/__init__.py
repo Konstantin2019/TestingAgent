@@ -15,7 +15,7 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
-store = { 'time_for_rk1': 90, 'time_for_rk2': 90, 'interval': 1, 'groups': list() }
+store = { 'time_for_rk1': 5, 'time_for_rk2': 5, 'interval': 1, 'groups': list() }
 
 from app.view_controllers import init_controllers
 init_controllers(app)

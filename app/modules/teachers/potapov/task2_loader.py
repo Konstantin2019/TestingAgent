@@ -110,15 +110,17 @@ def __rk2_task3_gen():
             k = 2
         else:
             k = 3
-        Xmin = mu - T/2
-        Xmax = mu + T/2
-        Xqmin = mean(X) - k*std(X, ddof=1)
-        Xqmax = mean(X) + k*std(X, ddof=1)
+        Xmin = round(mu - T/2, 3)
+        Xmax = round(mu + T/2, 3)
+        Xqmin = round(mean(X) - k*std(X, ddof=1), 3)
+        Xqmax = round(mean(X) + k*std(X, ddof=1), 3)
         if Xqmin >= Xmin and Xqmax <= Xmax:
             valid = 'годно'
         else:
             valid = 'брак'
-        return {'Task': {'X': X, 'P': P, 'n': n}, 'Answer': {'valid': valid}}
+        return {'Task': {'X': X, 'P': P, 'n': n, 'Xmin': Xmin, 'Xmax': Xmax}, \
+                'Answer': {'valid': valid}
+               }
     mu = randint(10,100)
     T = uniform(0.03,0.1)
     sigma = T/choice([4,5,6])
@@ -191,6 +193,7 @@ def __rk2_task2_prepare(text, values):
 def __rk2_task3_prepare(text, values):
     text = text.replace('{n = }', 'n = ' + str(values['Task']['n'])) \
                .replace('{X = []}', 'X = ' + str(values['Task']['X'])) \
+               .replace('{[]}', '[' + str(values['Task']['Xmin']) + '; ' + str(values['Task']['Xmax']) + ']') \
                .replace('{P = }', 'P = ' + str(values['Task']['P']))
     answer = { 'valid': values['Answer']['valid'] }
     return { text : dumps(answer, ensure_ascii=False) }

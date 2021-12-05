@@ -82,17 +82,19 @@ class RK2_Checker():
             self.answer = self.answer.replace(',', '.').strip()
             spam = re.split('/ | |/', self.answer)
             if index == 1:
-                if len(spam) != 2:
+                if len(spam) < 1 and len(spam) > 2:
                     return 0, self.answer
-                student_answer = { 'valid': spam[0], 'explanation': spam[1] }
+                student_answer = { 'valid': spam[0], \
+                                   'explanation': spam[1] if len(spam) == 2 else 'нет' }
                 if student_answer['valid'] == correct_answer['valid']:
                     return 1, dumps(student_answer, ensure_ascii=False)
                 else: 
                     return 0, dumps(student_answer, ensure_ascii=False)
             elif index == 2:
-                if len(spam) != 4:
+                if len(spam) < 3 and len(spam) > 4:
                     return 0, self.answer
-                student_answer = { 'valid': [spam[0], spam[1], spam[2]], 'explanation': spam[3] }
+                student_answer = { 'valid': [spam[0], spam[1], spam[2]], \
+                                   'explanation': spam[3] if len(spam) == 4 else 'нет' }
                 score = 0
                 for k in range(3):
                     if student_answer['valid'][k] == correct_answer['valid'][k]:
@@ -102,9 +104,10 @@ class RK2_Checker():
                 else:
                     return 0, dumps(student_answer, ensure_ascii=False)
             elif index == 3:
-                if len(spam) != 2:
+                if len(spam) < 1 and len(spam) > 2:
                     return 0, self.answer
-                student_answer = { 'valid': spam[0], 'explanation': spam[1] }
+                student_answer = { 'valid': spam[0], \
+                                   'explanation': spam[1] if len(spam) == 2 else 'нет' }
                 if student_answer['valid'] == correct_answer['valid']:
                     return 1, dumps(student_answer, ensure_ascii=False)
                 else: 
@@ -119,6 +122,6 @@ class RK2_Checker():
                     return 2, dumps(student_answer)
                 else: 
                     return 0, dumps(student_answer)
-        except Exception as error:
+        except Exception:
             return 0, self.answer
     

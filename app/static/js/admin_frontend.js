@@ -48,7 +48,7 @@ function make_questions_dom(rk, student) {
         $(`<div class="container">
             <div class="jumbotron">
                 <div class="row justify-content-center">
-                    <span>${student}</span>
+                    <span style="font-size: 25px; color: cornflowerblue;"><b>${student}</b></span>
                 </div>
                 <div class="row">
                     <table id="${rk}_lst" class="table">
