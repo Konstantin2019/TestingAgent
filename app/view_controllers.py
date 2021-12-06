@@ -196,7 +196,8 @@ def init_controllers(app):
                 return make_response(json.dumps(jsonfied_groups), 200)
             if year_id and group_id:
                 group = sql_provider.get(Group, group_id)
-                students = [student for student in group.students]
+                sorted_students = sorted(group.students, key=lambda v: v.surname, reverse=False)
+                students = [student for student in sorted_students]
                 jsonfied_students = [jsonify(id=student.id, surname=student.surname, name=student.name, patronymic=student.patronymic, \
                                      rk1_score=student.rk1_score, rk2_score=student.rk2_score) \
                                      .data.decode('utf-8') for student in students]
@@ -204,6 +205,14 @@ def init_controllers(app):
         if request.method == "POST":
             try:
                 data = request.get_json()
+                if 'question_id' in data and data['question_id']:
+                    try:
+                        patch = {'score': int(data['question_score'])}
+                        test_cls = RK1 if data['rk'] == 'rk1' else RK2
+                        question_id = sql_provider.update(test_cls, data['question_id'], patch)
+                        return make_response(jsonify(question_id), 200)
+                    except Exception as err:
+                        return make_response('', 400)
                 if 'method' in data and data['method'] == 'delete':
                     if 'group_id' in data and data['group_id']:
                         group_id = sql_provider.delete(Group, data['group_id'])

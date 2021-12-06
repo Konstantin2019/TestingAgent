@@ -2,12 +2,12 @@ var save_dom = $('#content').html();
 
 function get_student(idx, student) {
     let row =
-     $(`<tr id="${student["id"]}">
-        <td>${idx}</td>
-        <td id="surname${student["id"]}">${student["surname"]}</td>
-        <td id="name${student["id"]}">${student["name"]}</td>
-        <td id="patronymic${student["id"]}">${student["patronymic"]}</td>
-        <td>
+        $(`<tr id="${student["id"]}">
+         <td>${idx}</td>
+         <td id="surname${student["id"]}">${student["surname"]}</td>
+         <td id="name${student["id"]}">${student["name"]}</td>
+         <td id="patronymic${student["id"]}">${student["patronymic"]}</td>
+         <td>
             <button id="view_student_rk1_${student["id"]}" data-toggle="tooltip" title="Просмотреть">
                 <span style="color: purple">
                     <i class="fas fa-eye"></i>
@@ -17,8 +17,8 @@ function get_student(idx, student) {
                 </script>
             </button>
             ${student["rk1_score"]}
-        </td>
-        <td>
+         </td>
+         <td>
             <button id="view_student_rk2_${student["id"]}" data-toggle="tooltip" title="Просмотреть">
                 <span style="color: purple">
                     <i class="fas fa-eye"></i>
@@ -28,8 +28,8 @@ function get_student(idx, student) {
                 </script>
             </button>
             ${student["rk2_score"]}
-        </td>
-        <td>
+         </td>
+         <td>
             <button id="del_student_${student["id"]}" data-toggle="tooltip" title="Удалить">
                 <span style="color: red">
                     <i class="fas fa-ban"></i>
@@ -38,7 +38,7 @@ function get_student(idx, student) {
                     $('#del_student_${student["id"]}').click(del_student);
                 </script>
             </button>
-        </td>
+         </td>
      </tr>`);
     return row;
 }
@@ -51,7 +51,7 @@ function make_questions_dom(rk, student) {
                     <span style="font-size: 25px; color: cornflowerblue;"><b>${student}</b></span>
                 </div>
                 <div class="row">
-                    <table id="${rk}_lst" class="table">
+                    <table id="${rk}" class="table">
                         <thead>
                             <tr>
                                 <th scope="col">№</th>
@@ -78,13 +78,13 @@ function make_questions_dom(rk, student) {
 
 function get_question(idx, question) {
     let row =
-     $(`<tr>
-        <td>${idx}</td>
-        <td>${question["question"]}</td>
-        <td>${question["student_answer"]}</td>
-        <td>${question["correct_answer"]}</td>
-        <td>${question["score"]}</td>
-     </tr>`);
+        $(`<tr id="${question["id"]}">
+            <td>${idx}</td>
+            <td>${question["question"]}</td>
+            <td>${question["student_answer"]}</td>
+            <td>${question["correct_answer"]}</td>
+            <td contenteditable="True">${question["score"]}</td>
+        </tr>`);
     return row;
 }
 
@@ -106,8 +106,7 @@ function view_student(rk_data) {
                 json_rk.forEach(json_question => {
                     let question = $.parseJSON(json_question);
                     if (question != undefined || null) {
-                        $(`#${rk}_lst`).find('tbody')
-                                       .append(get_question(idx, question));
+                        $(`#${rk}`).find('tbody').append(get_question(idx, question));
                     }
                     idx++;
                 });
@@ -139,8 +138,8 @@ function go_back() {
 }
 
 $(document).ready(() => {
-    $('#year_sel').on('change', () => {
-        let selected_year = $('#year_sel option:selected');
+    $('#year_sel').on('change', function () {
+        let selected_year = $('option:selected', this);
         let year_value = selected_year.val();
         if (year_value != undefined || null) {
             $.ajax({
@@ -166,9 +165,9 @@ $(document).ready(() => {
         }
     });
 
-    $('#group_sel').on('change', () => {
+    $('#group_sel').on('change', function () {
         let selected_year = $('#year_sel option:selected');
-        let selected_group = $('#group_sel option:selected');
+        let selected_group = $('option:selected', this);
         let year_value = selected_year.val();
         let group_value = selected_group.val();
         if (group_value != undefined || null) {
@@ -184,8 +183,7 @@ $(document).ready(() => {
                         json_students.forEach(json_student => {
                             let student = $.parseJSON(json_student);
                             if (student != undefined || null) {
-                                $('#students_lst').find('tbody')
-                                    .append(get_student(idx, student));
+                                $('#students_lst').find('tbody').append(get_student(idx, student));
                                 idx++;
                             }
                         });
@@ -237,6 +235,28 @@ $(document).ready(() => {
                     alert(`Группа с id = ${id} успешно удалена!`);
                     $('#group_sel').find('[value=' + id + ']').remove();
                     $('#group_sel option:last').prop('selected', true).change();
+                },
+                error: (err) => { console.error(err); }
+            });
+        }
+    });
+
+    $(document).on('blur', 'table tbody tr', function () {
+        let table_id = $(this).parents('table')[0].id;
+        if (table_id == 'rk1' || table_id == 'rk2') {
+            let taget = $('td:last', this);
+            $.ajax({
+                type: "POST",
+                url: $(location).attr('href'),
+                contentType: "application/json",
+                data: JSON.stringify({
+                    'question_id': $(this).attr('id'),
+                    'question_score': taget.text(),
+                    'rk': table_id
+                }),
+                success: (response) => {
+                    let id = $.parseJSON(response);
+                    alert(`Баллы за вопрос с id = ${id} успешно изменены!`);
                 },
                 error: (err) => { console.error(err); }
             });
