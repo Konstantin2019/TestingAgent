@@ -213,6 +213,26 @@ def init_controllers(app):
                         return make_response(jsonify(question_id), 200)
                     except Exception as err:
                         return make_response('', 400)
+                if 'refresh' in data and data['refresh'] == 'do':
+                    try:
+                        student_id = data['student_id']
+                        rk1_objs = sql_provider.query(RK1).filter_by(student_id=student_id).all()
+                        rk1_scores = [item.score if item else 0 for item in rk1_objs]
+                        rk1_total_score = sum(rk1_scores)
+                        rk2_objs = sql_provider.query(RK2).filter_by(student_id=student_id).all()
+                        rk2_scores = [item.score if item else 0 for item in rk2_objs]
+                        rk2_total_score = sum(rk2_scores)
+                        student = sql_provider.get(Student, student_id)
+                        scores = student.rk1_score, student.rk2_score
+                        if scores[0] != rk1_total_score:
+                            patch = {'rk1_score': rk1_total_score}
+                            sql_provider.update(Student, student_id, patch)
+                        if scores[1] != rk2_total_score:
+                            patch = {'rk2_score': rk2_total_score}
+                            sql_provider.update(Student, student_id, patch)
+                        return make_response(jsonify([rk1_total_score, rk2_total_score]), 200)
+                    except Exception:
+                        return make_response('', 400)
                 if 'method' in data and data['method'] == 'delete':
                     if 'group_id' in data and data['group_id']:
                         group_id = sql_provider.delete(Group, data['group_id'])

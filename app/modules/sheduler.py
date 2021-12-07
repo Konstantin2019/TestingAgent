@@ -3,7 +3,7 @@ from app.models.shemas import Student, RK1, RK2
 from time import sleep
 
 def do_on_complete(student_id, test_name, job_name):
-    def __finallize__():
+    def __finallize():
         total_score = 0
         try:
             rk_objs = sql_provider.query(RK1).filter_by(student_id=student_id).all() \
@@ -24,7 +24,7 @@ def do_on_complete(student_id, test_name, job_name):
                      else student.rk2_remaining_time
     if remaining_time == 0:
         sleep(60)
-        __finallize__()
+        __finallize()
     else:
         patch = {'rk1_remaining_time': remaining_time - store['interval']} if test_name == 'rk1' \
                else {'rk2_remaining_time': remaining_time - store['interval']}

@@ -3,43 +3,51 @@ var save_dom = $('#content').html();
 function get_student(idx, student) {
     let row =
         $(`<tr id="${student["id"]}">
-         <td>${idx}</td>
-         <td id="surname${student["id"]}">${student["surname"]}</td>
-         <td id="name${student["id"]}">${student["name"]}</td>
-         <td id="patronymic${student["id"]}">${student["patronymic"]}</td>
-         <td>
-            <button id="view_student_rk1_${student["id"]}" data-toggle="tooltip" title="Просмотреть">
-                <span style="color: purple">
-                    <i class="fas fa-eye"></i>
-                </span>
-                <script>
-                    $('#view_student_rk1_${student["id"]}').click(["rk1"], view_student);
-                </script>
-            </button>
-            ${student["rk1_score"]}
-         </td>
-         <td>
-            <button id="view_student_rk2_${student["id"]}" data-toggle="tooltip" title="Просмотреть">
-                <span style="color: purple">
-                    <i class="fas fa-eye"></i>
-                </span>
-                <script>
-                    $('#view_student_rk2_${student["id"]}').click(["rk2"], view_student);
-                </script>
-            </button>
-            ${student["rk2_score"]}
-         </td>
-         <td>
-            <button id="del_student_${student["id"]}" data-toggle="tooltip" title="Удалить">
-                <span style="color: red">
-                    <i class="fas fa-ban"></i>
-                </span>
-                <script>
-                    $('#del_student_${student["id"]}').click(del_student);
-                </script>
-            </button>
-         </td>
-     </tr>`);
+                <td>${idx}</td>
+                <td id="surname${student["id"]}">${student["surname"]}</td>
+                <td id="name${student["id"]}">${student["name"]}</td>
+                <td id="patronymic${student["id"]}">${student["patronymic"]}</td>
+                <td id="rk1_${student["id"]}">
+                    <button id="view_student_rk1_${student["id"]}" data-toggle="tooltip" title="Просмотреть">
+                        <span style="color: purple">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                        <script>
+                            $('#view_student_rk1_${student["id"]}').click(["rk1"], view_student);
+                        </script>
+                    </button>
+                    <span id="rk1_${student["id"]}_value">${student["rk1_score"]}</span>
+                </td>
+                <td id="rk2_${student["id"]}">
+                    <button id="view_student_rk2_${student["id"]}" data-toggle="tooltip" title="Просмотреть">
+                        <span style="color: purple">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                        <script>
+                            $('#view_student_rk2_${student["id"]}').click(["rk2"], view_student);
+                        </script>
+                    </button>
+                    <span id="rk2_${student["id"]}_value">${student["rk2_score"]}</span>
+                </td>
+                <td>
+                    <button id="del_student_${student["id"]}" data-toggle="tooltip" title="Удалить">
+                        <span style="color: red">
+                            <i class="fas fa-ban"></i>
+                        </span>
+                        <script>
+                            $('#del_student_${student["id"]}').click(del_student);
+                        </script>
+                    </button>
+                    <button id="refresh_${student["id"]}" data-toggle="tooltip" title="Обновить">
+                        <span style="color: red">
+                            <i class="fa fa-refresh" aria-hidden="true"></i>
+                        </span>
+                        <script>
+                            $('#refresh_${student["id"]}').click(refresh);
+                        </script>
+                    </button>
+                </td>
+        </tr>`);
     return row;
 }
 
@@ -127,6 +135,21 @@ function del_student() {
             let id = $.parseJSON(response);
             alert(`Студент с id = ${id} успешно удалён!`);
             $(`#${id}`).remove();
+        },
+        error: (err) => { console.error(err); }
+    });
+}
+
+function refresh () {
+    let id = $(this).parents('tr')[0].id;
+    $.ajax({
+        type: "POST",
+        url: $(location).attr('href'),
+        contentType: "application/json",
+        data: JSON.stringify({ 'student_id': id, 'refresh': 'do' }),
+        success: (response) => {
+            $(`#rk1_${id}_value`).text(response[0]);
+            $(`#rk2_${id}_value`).text(response[1]);
         },
         error: (err) => { console.error(err); }
     });
