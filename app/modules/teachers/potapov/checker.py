@@ -16,7 +16,7 @@ class RK1_Checker():
                     return 0, self.answer
                 student_answer = { 'RE': float(spam[0]), 'SE': float(spam[1]) }
                 RE_dif = (correct_answer['RE'] - student_answer['RE']) / correct_answer['RE']
-                SE_dif = (correct_answer['RE'] - student_answer['RE']) / correct_answer['RE']
+                SE_dif = (correct_answer['SE'] - student_answer['SE']) / correct_answer['SE']
                 if abs(RE_dif) <= 0.05 and abs(SE_dif) <= 0.05:
                     return 1, dumps(student_answer)
                 else: 

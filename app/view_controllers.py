@@ -38,8 +38,8 @@ def init_controllers(app):
                 group_id = sql_provider.set(group)
                 student = Student(surname=auth_view.surname.data, name=auth_view.name.data, \
                                   patronymic=auth_view.patronymic.data, group_id=group_id, \
-                                  rk1_status='Ready', rk1_remaining_time=store['time_for_rk1'], rk1_score=0, \
-                                  rk2_status='Ready', rk2_remaining_time=store['time_for_rk2'], rk2_score=0)
+                                  rk1_status='Ready', rk1_remaining_time=store['time_for_rk1'], \
+                                  rk2_status='Ready', rk2_remaining_time=store['time_for_rk2'])
                 student_id = sql_provider.set(student)
                 rk_choice = auth_view.test.data
                 return redirect(url_for('test', student_id=student_id, rk_choice=rk_choice, teacher=auth_view.teacher.data))
@@ -206,33 +206,14 @@ def init_controllers(app):
             try:
                 data = request.get_json()
                 if 'question_id' in data and data['question_id']:
-                    try:
-                        patch = {'score': int(data['question_score'])}
-                        test_cls = RK1 if data['rk'] == 'rk1' else RK2
-                        question_id = sql_provider.update(test_cls, data['question_id'], patch)
-                        return make_response(jsonify(question_id), 200)
-                    except Exception as err:
-                        return make_response('', 400)
+                    patch = {'score': int(data['question_score'])}
+                    test_cls = RK1 if data['rk'] == 'rk1' else RK2
+                    question_id = sql_provider.update(test_cls, data['question_id'], patch)
+                    return make_response(jsonify(question_id), 200)
                 if 'refresh' in data and data['refresh'] == 'do':
-                    try:
-                        student_id = data['student_id']
-                        rk1_objs = sql_provider.query(RK1).filter_by(student_id=student_id).all()
-                        rk1_scores = [item.score if item else 0 for item in rk1_objs]
-                        rk1_total_score = sum(rk1_scores)
-                        rk2_objs = sql_provider.query(RK2).filter_by(student_id=student_id).all()
-                        rk2_scores = [item.score if item else 0 for item in rk2_objs]
-                        rk2_total_score = sum(rk2_scores)
-                        student = sql_provider.get(Student, student_id)
-                        scores = student.rk1_score, student.rk2_score
-                        if scores[0] != rk1_total_score:
-                            patch = {'rk1_score': rk1_total_score}
-                            sql_provider.update(Student, student_id, patch)
-                        if scores[1] != rk2_total_score:
-                            patch = {'rk2_score': rk2_total_score}
-                            sql_provider.update(Student, student_id, patch)
-                        return make_response(jsonify([rk1_total_score, rk2_total_score]), 200)
-                    except Exception:
-                        return make_response('', 400)
+                    student_id = data['student_id']
+                    student = sql_provider.get(Student, student_id)
+                    return make_response(jsonify([student.rk1_score, student.rk2_score]), 200)
                 if 'method' in data and data['method'] == 'delete':
                     if 'group_id' in data and data['group_id']:
                         group_id = sql_provider.delete(Group, data['group_id'])
