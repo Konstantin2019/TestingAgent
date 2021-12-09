@@ -101,7 +101,7 @@ function view_student(rk_data) {
     let id = $(this).parents('tr')[0].id;
     $.ajax({
         type: "GET",
-        url: $(location).attr('href'),
+        url: $(location).attr('href') + '/student',
         data: { 'student': id, 'rk': rk, 'method': 'view' },
         success: (response) => {
             try {
@@ -119,24 +119,24 @@ function view_student(rk_data) {
                     idx++;
                 });
             }
-            catch (err) { console.error(err); }
+            catch (err) { }
         }
     });
 }
 
 function del_student() {
-    let id = $(this).parents('tr')[0].id;
+    let student_id = $(this).parents('tr')[0].id;
     $.ajax({
         type: "POST",
-        url: $(location).attr('href'),
+        url: $(location).attr('href') + `/student/${student_id}`,
         contentType: "application/json",
-        data: JSON.stringify({ 'student_id': id, 'method': 'delete' }),
+        data: JSON.stringify({ 'method': 'delete' }),
         success: (response) => {
-            let id = $.parseJSON(response);
-            alert(`Студент с id = ${id} успешно удалён!`);
-            $(`#${id}`).remove();
+            let student_id = $.parseJSON(response);
+            alert(`Студент с id = ${student_id} успешно удалён!`);
+            $(`#${student_id}`).remove();
         },
-        error: (err) => { console.error(err); }
+        error: () => { }
     });
 }
 
@@ -146,12 +146,12 @@ function refresh () {
         type: "POST",
         url: $(location).attr('href'),
         contentType: "application/json",
-        data: JSON.stringify({ 'student_id': id, 'refresh': 'do' }),
+        data: JSON.stringify({ 'student_id': id, 'refresh': 'refresh' }),
         success: (response) => {
             $(`#rk1_${id}_value`).text(response[0]);
             $(`#rk2_${id}_value`).text(response[1]);
         },
-        error: (err) => { console.error(err); }
+        error: () => { }
     });
 }
 
@@ -167,7 +167,7 @@ $(document).ready(() => {
         if (year_value != undefined || null) {
             $.ajax({
                 type: "GET",
-                url: $(location).attr('href'),
+                url: $(location).attr('href') + '/year',
                 data: { year: year_value },
                 success: (response) => {
                     try {
@@ -181,9 +181,9 @@ $(document).ready(() => {
                                 text: group["group_name"]
                             }));
                         });
-                    } catch (err) { console.error(err); }
+                    } catch (err) { }
                 },
-                error: (err) => { console.error(err); }
+                error: () => { }
             });
         }
     });
@@ -196,7 +196,7 @@ $(document).ready(() => {
         if (group_value != undefined || null) {
             $.ajax({
                 type: "GET",
-                url: $(location).attr('href'),
+                url: $(location).attr('href') + '/group',
                 data: { year: year_value, group: group_value },
                 success: (response) => {
                     try {
@@ -210,9 +210,9 @@ $(document).ready(() => {
                                 idx++;
                             }
                         });
-                    } catch (err) { console.error(err); }
+                    } catch (err) { }
                 },
-                error: (err) => { console.error(err); }
+                error: () => { }
             });
         }
     });
@@ -226,7 +226,7 @@ $(document).ready(() => {
             if (text.length > 3) {
                 $.ajax({
                     type: "POST",
-                    url: $(location).attr('href'),
+                    url: $(location).attr('href') + '/group/create',
                     contentType: "application/json",
                     data: JSON.stringify({ 'group_name': text, 'method': 'create' }),
                     success: (response) => {
@@ -239,50 +239,53 @@ $(document).ready(() => {
                         }));
                         $('#group_sel option:last').prop('selected', true).change();
                     },
-                    error: (err) => { console.error(err); }
+                    error: () => { }
                 });
             }
         }
     });
 
     $('#del_group').click(() => {
-        let group = $('#group_sel option:selected').val();
-        if (group != undefined || null) {
+        let group_id = $('#group_sel option:selected').val();
+        if (group_id != undefined || null) {
             $.ajax({
                 type: "POST",
-                url: $(location).attr('href'),
+                url: $(location).attr('href') + `/group/${group_id}`,
                 contentType: "application/json",
-                data: JSON.stringify({ 'group_id': group, 'method': 'delete' }),
+                data: JSON.stringify({ 'method': 'delete' }),
                 success: (response) => {
                     let id = $.parseJSON(response);
                     alert(`Группа с id = ${id} успешно удалена!`);
                     $('#group_sel').find('[value=' + id + ']').remove();
                     $('#group_sel option:last').prop('selected', true).change();
                 },
-                error: (err) => { console.error(err); }
+                error: () => { }
             });
         }
     });
 
-    $(document).on('blur', 'table tbody tr', function () {
-        let table_id = $(this).parents('table')[0].id;
-        if (table_id == 'rk1' || table_id == 'rk2') {
-            let taget = $('td:last', this);
-            $.ajax({
-                type: "POST",
-                url: $(location).attr('href'),
-                contentType: "application/json",
-                data: JSON.stringify({
-                    'question_id': $(this).attr('id'),
-                    'question_score': taget.text(),
-                    'rk': table_id
-                }),
-                success: (response) => {
-                    let id = $.parseJSON(response);
-                    alert(`Баллы за вопрос с id = ${id} успешно изменены!`);
-                },
-                error: (err) => { console.error(err); }
-            });
+    $(document).on('keypress', 'table tbody tr', function (e) {
+        if (e.key == "Enter") {
+            e.preventDefault();
+            let table_id = $(this).parents('table')[0].id;
+            let question_id = $(this).attr('id');
+            if (table_id == 'rk1' || table_id == 'rk2') {
+                let taget = $('td:last', this);
+                $.ajax({
+                    type: "POST",
+                    url: $(location).attr('href') + `/question/${question_id}`,
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        'question_score': taget.text(),
+                        'rk': table_id
+                    }),
+                    success: (response) => {
+                        let id = $.parseJSON(response);
+                        alert(`Баллы за вопрос с id = ${id} успешно изменены!`);
+                    },
+                    error: () => { }
+                });
+            }
         }
     });
 });
