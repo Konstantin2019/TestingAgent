@@ -66,12 +66,33 @@
          </div>
       </div>
       {% endfor %}
+      <row class="row justify-content-center">
+         <button id="finish">Завершить</button>
+      </row>
    </row>
    <script>
       $(document).ready(() => {
          let delay = 1000 * 30;
          update_time();
          setInterval(() => { update_time(); }, delay);
+         $('#finish').click(() => {
+            $.ajax({
+               type: "POST",
+               url: $(location).attr('href'),
+               contentType: "application/json",
+               data: JSON.stringify({
+                  'status': 'finish'
+               }),
+               success: (response) => {
+                  alert(response);
+                  update_time();
+                },
+               error: (err) => {
+                  if (err.responseJSON != undefined) { alert(err.responseJSON); }
+                  else { alert('Сервер не отвечает...'); }
+               }
+            });
+         });
       });
       function update_time() {
          $.ajax({

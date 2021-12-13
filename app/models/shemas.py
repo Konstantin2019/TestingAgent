@@ -1,5 +1,7 @@
+from sqlalchemy.util.langhelpers import hybridproperty
 from app import db
 from sqlalchemy.orm import backref, synonym
+from sqlalchemy.ext.hybrid import hybrid_property
 
 class Year(db.Model):
     __tablename__ = 'years'
@@ -36,12 +38,18 @@ class Student(db.Model):
                                      cascade="all, delete", passive_deletes=True)
     rk1_status = db.Column(db.String(12), nullable=True)
     rk1_remaining_time = db.Column(db.Integer, nullable=True)
-    rk1_score = db.Column(db.Integer, nullable=True)
     rk2_questions = db.relationship('RK2', backref='student', lazy=True, \
                                      cascade="all, delete", passive_deletes=True)
     rk2_status = db.Column(db.String(12), nullable=True)
     rk2_remaining_time = db.Column(db.Integer, nullable=True)
-    rk2_score = db.Column(db.Integer, nullable=True)
+
+    @hybrid_property
+    def rk1_score(self):
+        return sum(rk1_question.score for rk1_question in self.rk1_questions)
+
+    @hybrid_property
+    def rk2_score(self):
+        return sum(rk2_question.score for rk2_question in self.rk2_questions)
 
     def __repr__(self):
         return f'<surname {self.surname}>' 

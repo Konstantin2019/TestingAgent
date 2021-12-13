@@ -2,44 +2,52 @@ var save_dom = $('#content').html();
 
 function get_student(idx, student) {
     let row =
-     $(`<tr id="${student["id"]}">
-        <td>${idx}</td>
-        <td id="surname${student["id"]}">${student["surname"]}</td>
-        <td id="name${student["id"]}">${student["name"]}</td>
-        <td id="patronymic${student["id"]}">${student["patronymic"]}</td>
-        <td>
-            <button id="view_student_rk1_${student["id"]}" data-toggle="tooltip" title="Просмотреть">
-                <span style="color: purple">
-                    <i class="fas fa-eye"></i>
-                </span>
-                <script>
-                    $('#view_student_rk1_${student["id"]}').click(["rk1"], view_student);
-                </script>
-            </button>
-            ${student["rk1_score"]}
-        </td>
-        <td>
-            <button id="view_student_rk2_${student["id"]}" data-toggle="tooltip" title="Просмотреть">
-                <span style="color: purple">
-                    <i class="fas fa-eye"></i>
-                </span>
-                <script>
-                    $('#view_student_rk2_${student["id"]}').click(["rk2"], view_student);
-                </script>
-            </button>
-            ${student["rk2_score"]}
-        </td>
-        <td>
-            <button id="del_student_${student["id"]}" data-toggle="tooltip" title="Удалить">
-                <span style="color: red">
-                    <i class="fas fa-ban"></i>
-                </span>
-                <script>
-                    $('#del_student_${student["id"]}').click(del_student);
-                </script>
-            </button>
-        </td>
-     </tr>`);
+        $(`<tr id="${student["id"]}">
+                <td>${idx}</td>
+                <td id="surname${student["id"]}">${student["surname"]}</td>
+                <td id="name${student["id"]}">${student["name"]}</td>
+                <td id="patronymic${student["id"]}">${student["patronymic"]}</td>
+                <td id="rk1_${student["id"]}">
+                    <button id="view_student_rk1_${student["id"]}" data-toggle="tooltip" title="Просмотреть">
+                        <span style="color: purple">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                        <script>
+                            $('#view_student_rk1_${student["id"]}').click(["rk1"], view_student);
+                        </script>
+                    </button>
+                    <span id="rk1_${student["id"]}_value">${student["rk1_score"]}</span>
+                </td>
+                <td id="rk2_${student["id"]}">
+                    <button id="view_student_rk2_${student["id"]}" data-toggle="tooltip" title="Просмотреть">
+                        <span style="color: purple">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                        <script>
+                            $('#view_student_rk2_${student["id"]}').click(["rk2"], view_student);
+                        </script>
+                    </button>
+                    <span id="rk2_${student["id"]}_value">${student["rk2_score"]}</span>
+                </td>
+                <td>
+                    <button id="del_student_${student["id"]}" data-toggle="tooltip" title="Удалить">
+                        <span style="color: red">
+                            <i class="fas fa-ban"></i>
+                        </span>
+                        <script>
+                            $('#del_student_${student["id"]}').click(del_student);
+                        </script>
+                    </button>
+                    <button id="refresh_${student["id"]}" data-toggle="tooltip" title="Обновить">
+                        <span style="color: red">
+                            <i class="fa fa-refresh" aria-hidden="true"></i>
+                        </span>
+                        <script>
+                            $('#refresh_${student["id"]}').click(refresh);
+                        </script>
+                    </button>
+                </td>
+        </tr>`);
     return row;
 }
 
@@ -48,10 +56,10 @@ function make_questions_dom(rk, student) {
         $(`<div class="container">
             <div class="jumbotron">
                 <div class="row justify-content-center">
-                    <span>${student}</span>
+                    <span style="font-size: 25px; color: cornflowerblue;"><b>${student}</b></span>
                 </div>
                 <div class="row">
-                    <table id="${rk}_lst" class="table">
+                    <table id="${rk}" class="table">
                         <thead>
                             <tr>
                                 <th scope="col">№</th>
@@ -78,74 +86,91 @@ function make_questions_dom(rk, student) {
 
 function get_question(idx, question) {
     let row =
-     $(`<tr>
-        <td>${idx}</td>
-        <td>${question["question"]}</td>
-        <td>${question["student_answer"]}</td>
-        <td>${question["correct_answer"]}</td>
-        <td>${question["score"]}</td>
-     </tr>`);
+        $(`<tr id="${question["id"]}">
+            <td>${idx}</td>
+            <td>${question["question"]}</td>
+            <td>${question["student_answer"]}</td>
+            <td>${question["correct_answer"]}</td>
+            <td contenteditable="True">${question["score"]}</td>
+        </tr>`);
     return row;
 }
 
 function view_student(rk_data) {
     let rk = rk_data.data[0];
-    let id = $(this).parents('tr')[0].id;
+    let student_id = $(this).parents('tr')[0].id;
     $.ajax({
         type: "GET",
-        url: $(location).attr('href'),
-        data: { 'student': id, 'rk': rk, 'method': 'view' },
+        url: $(location).attr('href') + `/view_student/${student_id}`,
+        data: { 'rk': rk, 'method': 'view' },
         success: (response) => {
             try {
                 let json_rk = $.parseJSON(response);
                 save_dom = $('#content').html();
-                let student = $(`#surname${id}`).text() + ' ' + $(`#name${id}`).text();
+                $('#year_sel').prop('disabled', true);
+                $('#group_sel').prop('disabled', true);
+                let student = $(`#surname${student_id}`).text() + ' ' + $(`#name${student_id}`).text();
                 $('#content').empty();
                 $('#content').append(make_questions_dom(rk, student));
                 let idx = 1;
                 json_rk.forEach(json_question => {
                     let question = $.parseJSON(json_question);
                     if (question != undefined || null) {
-                        $(`#${rk}_lst`).find('tbody')
-                                       .append(get_question(idx, question));
+                        $(`#${rk}`).find('tbody').append(get_question(idx, question));
                     }
                     idx++;
                 });
             }
-            catch (err) { console.error(err); }
+            catch (err) { }
         }
     });
 }
 
 function del_student() {
-    let id = $(this).parents('tr')[0].id;
+    let student_id = $(this).parents('tr')[0].id;
     $.ajax({
         type: "POST",
-        url: $(location).attr('href'),
+        url: $(location).attr('href') + `/del_student/${student_id}`,
         contentType: "application/json",
-        data: JSON.stringify({ 'student_id': id, 'method': 'delete' }),
+        data: JSON.stringify({ 'method': 'delete' }),
         success: (response) => {
-            let id = $.parseJSON(response);
-            alert(`Студент с id = ${id} успешно удалён!`);
-            $(`#${id}`).remove();
+            let student_id = $.parseJSON(response);
+            alert(`Студент с id = ${student_id} успешно удалён!`);
+            $(`#${student_id}`).remove();
         },
-        error: (err) => { console.error(err); }
+        error: () => { }
+    });
+}
+
+function refresh () {
+    let student_id = $(this).parents('tr')[0].id;
+    $.ajax({
+        type: "GET",
+        url: $(location).attr('href') + `/get_student/${student_id}`,
+        data: { 'refresh': 'yes' },
+        success: (response) => {
+            $(`#rk1_${student_id}_value`).text(response[0]);
+            $(`#rk2_${student_id}_value`).text(response[1]);
+        },
+        error: () => { }
     });
 }
 
 function go_back() {
     $('#content').empty();
     $('#content').append(save_dom);
+    $('#year_sel').prop('disabled', false);
+    $('#group_sel').prop('disabled', false);
 }
 
 $(document).ready(() => {
-    $('#year_sel').on('change', () => {
-        let selected_year = $('#year_sel option:selected');
+    $('#year_sel').on('change', function () {
+        let selected_year = $('option:selected', this);
         let year_value = selected_year.val();
         if (year_value != undefined || null) {
             $.ajax({
                 type: "GET",
-                url: $(location).attr('href'),
+                url: $(location).attr('href') + '/view_year',
                 data: { year: year_value },
                 success: (response) => {
                     try {
@@ -159,22 +184,22 @@ $(document).ready(() => {
                                 text: group["group_name"]
                             }));
                         });
-                    } catch (err) { console.error(err); }
+                    } catch (err) { }
                 },
-                error: (err) => { console.error(err); }
+                error: () => { }
             });
         }
     });
 
-    $('#group_sel').on('change', () => {
+    $('#group_sel').on('change', function () {
         let selected_year = $('#year_sel option:selected');
-        let selected_group = $('#group_sel option:selected');
+        let selected_group = $('option:selected', this);
         let year_value = selected_year.val();
         let group_value = selected_group.val();
         if (group_value != undefined || null) {
             $.ajax({
                 type: "GET",
-                url: $(location).attr('href'),
+                url: $(location).attr('href') + '/view_group',
                 data: { year: year_value, group: group_value },
                 success: (response) => {
                     try {
@@ -184,14 +209,13 @@ $(document).ready(() => {
                         json_students.forEach(json_student => {
                             let student = $.parseJSON(json_student);
                             if (student != undefined || null) {
-                                $('#students_lst').find('tbody')
-                                    .append(get_student(idx, student));
+                                $('#students_lst').find('tbody').append(get_student(idx, student));
                                 idx++;
                             }
                         });
-                    } catch (err) { console.error(err); }
+                    } catch (err) { }
                 },
-                error: (err) => { console.error(err); }
+                error: () => { }
             });
         }
     });
@@ -205,7 +229,7 @@ $(document).ready(() => {
             if (text.length > 3) {
                 $.ajax({
                     type: "POST",
-                    url: $(location).attr('href'),
+                    url: $(location).attr('href') + '/create_group',
                     contentType: "application/json",
                     data: JSON.stringify({ 'group_name': text, 'method': 'create' }),
                     success: (response) => {
@@ -218,28 +242,53 @@ $(document).ready(() => {
                         }));
                         $('#group_sel option:last').prop('selected', true).change();
                     },
-                    error: (err) => { console.error(err); }
+                    error: () => { }
                 });
             }
         }
     });
 
     $('#del_group').click(() => {
-        let group = $('#group_sel option:selected').val();
-        if (group != undefined || null) {
+        let group_id = $('#group_sel option:selected').val();
+        if (group_id != undefined || null) {
             $.ajax({
                 type: "POST",
-                url: $(location).attr('href'),
+                url: $(location).attr('href') + `/del_group/${group_id}`,
                 contentType: "application/json",
-                data: JSON.stringify({ 'group_id': group, 'method': 'delete' }),
+                data: JSON.stringify({ 'method': 'delete' }),
                 success: (response) => {
                     let id = $.parseJSON(response);
                     alert(`Группа с id = ${id} успешно удалена!`);
                     $('#group_sel').find('[value=' + id + ']').remove();
                     $('#group_sel option:last').prop('selected', true).change();
                 },
-                error: (err) => { console.error(err); }
+                error: () => { }
             });
+        }
+    });
+
+    $(document).on('keypress', 'table tbody tr', function (e) {
+        if (e.key == "Enter") {
+            e.preventDefault();
+            let table_id = $(this).parents('table')[0].id;
+            let question_id = $(this).attr('id');
+            if (table_id == 'rk1' || table_id == 'rk2') {
+                let taget = $('td:last', this);
+                $.ajax({
+                    type: "POST",
+                    url: $(location).attr('href') + `/patch_question/${question_id}`,
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        'question_score': taget.text(),
+                        'rk': table_id
+                    }),
+                    success: (response) => {
+                        let id = $.parseJSON(response);
+                        alert(`Баллы за вопрос с id = ${id} успешно изменены!`);
+                    },
+                    error: () => { }
+                });
+            }
         }
     });
 });

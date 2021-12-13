@@ -45,6 +45,11 @@ table, th, td {
   font-style: normal;
 }
 
+.fa {
+  font-family: fontawesome !important;
+  font-style: normal;
+}
+
 .row {
   padding-top: 0%;
   padding-bottom: 0%;
