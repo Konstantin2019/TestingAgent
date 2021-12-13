@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 app = Flask(__name__)
-app.config.from_object('config.DevelopmentConfig')
+app.config.from_object('config.ProductionConfig')
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
@@ -15,7 +15,7 @@ scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
-store = { 'time_for_rk1': 5, 'time_for_rk2': 5, 'interval': 1, 'groups': list() }
+store = { 'time_for_rk1': 60, 'time_for_rk2': 60, 'interval': 1, 'groups': list() }
 
 from app.view_controllers import init_controllers
 init_controllers(app)

@@ -98,16 +98,18 @@ function get_question(idx, question) {
 
 function view_student(rk_data) {
     let rk = rk_data.data[0];
-    let id = $(this).parents('tr')[0].id;
+    let student_id = $(this).parents('tr')[0].id;
     $.ajax({
         type: "GET",
-        url: $(location).attr('href') + '/student',
-        data: { 'student': id, 'rk': rk, 'method': 'view' },
+        url: $(location).attr('href') + `/view_student/${student_id}`,
+        data: { 'rk': rk, 'method': 'view' },
         success: (response) => {
             try {
                 let json_rk = $.parseJSON(response);
                 save_dom = $('#content').html();
-                let student = $(`#surname${id}`).text() + ' ' + $(`#name${id}`).text();
+                $('#year_sel').prop('disabled', true);
+                $('#group_sel').prop('disabled', true);
+                let student = $(`#surname${student_id}`).text() + ' ' + $(`#name${student_id}`).text();
                 $('#content').empty();
                 $('#content').append(make_questions_dom(rk, student));
                 let idx = 1;
@@ -128,7 +130,7 @@ function del_student() {
     let student_id = $(this).parents('tr')[0].id;
     $.ajax({
         type: "POST",
-        url: $(location).attr('href') + `/student/${student_id}`,
+        url: $(location).attr('href') + `/del_student/${student_id}`,
         contentType: "application/json",
         data: JSON.stringify({ 'method': 'delete' }),
         success: (response) => {
@@ -141,15 +143,14 @@ function del_student() {
 }
 
 function refresh () {
-    let id = $(this).parents('tr')[0].id;
+    let student_id = $(this).parents('tr')[0].id;
     $.ajax({
-        type: "POST",
-        url: $(location).attr('href'),
-        contentType: "application/json",
-        data: JSON.stringify({ 'student_id': id, 'refresh': 'refresh' }),
+        type: "GET",
+        url: $(location).attr('href') + `/get_student/${student_id}`,
+        data: { 'refresh': 'yes' },
         success: (response) => {
-            $(`#rk1_${id}_value`).text(response[0]);
-            $(`#rk2_${id}_value`).text(response[1]);
+            $(`#rk1_${student_id}_value`).text(response[0]);
+            $(`#rk2_${student_id}_value`).text(response[1]);
         },
         error: () => { }
     });
@@ -158,6 +159,8 @@ function refresh () {
 function go_back() {
     $('#content').empty();
     $('#content').append(save_dom);
+    $('#year_sel').prop('disabled', false);
+    $('#group_sel').prop('disabled', false);
 }
 
 $(document).ready(() => {
@@ -167,7 +170,7 @@ $(document).ready(() => {
         if (year_value != undefined || null) {
             $.ajax({
                 type: "GET",
-                url: $(location).attr('href') + '/year',
+                url: $(location).attr('href') + '/view_year',
                 data: { year: year_value },
                 success: (response) => {
                     try {
@@ -196,7 +199,7 @@ $(document).ready(() => {
         if (group_value != undefined || null) {
             $.ajax({
                 type: "GET",
-                url: $(location).attr('href') + '/group',
+                url: $(location).attr('href') + '/view_group',
                 data: { year: year_value, group: group_value },
                 success: (response) => {
                     try {
@@ -226,7 +229,7 @@ $(document).ready(() => {
             if (text.length > 3) {
                 $.ajax({
                     type: "POST",
-                    url: $(location).attr('href') + '/group/create',
+                    url: $(location).attr('href') + '/create_group',
                     contentType: "application/json",
                     data: JSON.stringify({ 'group_name': text, 'method': 'create' }),
                     success: (response) => {
@@ -250,7 +253,7 @@ $(document).ready(() => {
         if (group_id != undefined || null) {
             $.ajax({
                 type: "POST",
-                url: $(location).attr('href') + `/group/${group_id}`,
+                url: $(location).attr('href') + `/del_group/${group_id}`,
                 contentType: "application/json",
                 data: JSON.stringify({ 'method': 'delete' }),
                 success: (response) => {
@@ -273,7 +276,7 @@ $(document).ready(() => {
                 let taget = $('td:last', this);
                 $.ajax({
                     type: "POST",
-                    url: $(location).attr('href') + `/question/${question_id}`,
+                    url: $(location).attr('href') + `/patch_question/${question_id}`,
                     contentType: "application/json",
                     data: JSON.stringify({
                         'question_score': taget.text(),

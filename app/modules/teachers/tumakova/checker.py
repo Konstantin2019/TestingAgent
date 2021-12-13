@@ -81,4 +81,43 @@ class RK1_Checker():
             return 0, self.answer
 
 class RK2_Checker():
-    pass
+    def __init__(self, correct_answer, answer):
+        self.correct_answer = correct_answer
+        self.answer = answer
+
+    def __call__(self, index):
+        try:
+            correct_answer = loads(self.correct_answer)
+            self.answer = self.answer.replace(',', '.').strip()
+            spam = re.split('; |: |/ |;|:| |/|&', self.answer)
+            if index == 1:
+                if len(spam) != 3:
+                    return 0, self.answer
+                student_answer = { 'd': int(spam[0]), 'Esd': int(spam[1]), 'Eid': int(spam[2]) }
+                if student_answer['d'] == correct_answer['d'] and \
+                   student_answer['Esd'] == correct_answer['Esd'] and \
+                   student_answer['Eid'] == correct_answer['Eid']:
+                    return 1, dumps(student_answer)
+                else: 
+                    return 0, dumps(student_answer)
+            elif index == 2:
+                if len(spam) != 3:
+                    return 0, self.answer
+                student_answer = { 'A4': int(spam[0]), 'EsA4': int(spam[1]), 'EiA4': int(spam[2]) }
+                if student_answer['A4'] == correct_answer['A4'] and \
+                   student_answer['EsA4'] == correct_answer['EsA4'] and \
+                   student_answer['EiA4'] == correct_answer['EiA4']:
+                    return 1, dumps(student_answer)
+                else:
+                    return 0, dumps(student_answer)
+            elif index == 3:
+                if len(spam) != 2:
+                    return 0, self.answer
+                student_answer = { 'TR1': int(spam[0]), 'TR1v': int(spam[1]) }
+                if student_answer['TR1'] == correct_answer['TR1'] and \
+                   student_answer['TR1v'] == correct_answer['TR1v']:
+                    return 1, dumps(student_answer)
+                else:
+                    return 0, dumps(student_answer)
+        except Exception:
+            return 0, self.answer

@@ -10,9 +10,8 @@ def __rk2_task1_gen():
         d2 = round(d - 2*(3/8)*H, 3)
         d1 = round(d - 2*(5/8)*H, 3)
         return d2, d1
-    def __inner_gen__(d, P, T, dr, d2r, d1r, fp, fa):
+    def __inner_gen__(thread_type, d, P, T, dr, d2r, d1r, fp, fa):
         valid = ''
-        thread_type = choice(['гайка', 'болт'])
         d2, d1 = __inner_calculator__(d, P)
         if thread_type == 'болт':
             dmax, dmin = d, d - T
@@ -42,13 +41,15 @@ def __rk2_task1_gen():
                 'dr': dr, 'd2r': d2r, 'd1r': d1r, 'fp': fp, 'fa': fa}, \
                 'Answer': {'valid': valid}
                }
+    thread_type = choice(['гайка', 'болт'])
     d = randint(20, 60)
     P = randint(1,4)
     d2, d1 = __inner_calculator__(d, P)
     T = round(uniform(0.02, 0.1), 3)
-    return __inner_gen__(d=d, P=P, T=T, \
-                         dr=round(d+uniform(-T/2, T/2), 3), d2r=round(d2+uniform(-T/2, T/2), 3), \
-                         d1r=round(d1+uniform(-T/2, T/2), 3),
+    dr = round(d+uniform(-T/2, 0), 3) if thread_type == 'болт' else round(d+uniform(0, T/2), 3)
+    d2r = round(d2+uniform(-T/2, 0), 3) if thread_type == 'болт' else round(d2+uniform(0, T/2), 3)
+    d1r = round(d1+uniform(-T/2, 0), 3) if thread_type == 'болт' else round(d1+uniform(0, T/2), 3)
+    return __inner_gen__(thread_type=thread_type, d=d, P=P, T=T, dr=dr, d2r=d2r, d1r=d1r, \
                          fp=round(uniform(0.005, 0.02), 3), fa=round(uniform(0.005, 0.02), 3))    
 
 def __rk2_task2_gen():

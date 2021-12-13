@@ -155,7 +155,7 @@ def init_controllers(app):
                 flash("Неверная пара: логин/пароль")
                 return render_template('admin_auth.html', form=auth_view)
 
-    @app.route('/admin', methods=['GET', 'POST'])
+    @app.route('/admin', methods=['GET'])
     def admin_index():
         admin_login = request.cookies.get('admin_login')
         admin_password = request.cookies.get('admin_password')
@@ -164,20 +164,12 @@ def init_controllers(app):
         correct_hash_code = sha1(str.encode(app.config['ADMIN_PASSWORD'])).hexdigest()
         if admin_login != app.config['ADMIN_LOGIN'] and admin_password != correct_hash_code:
             return redirect(url_for('admin_auth'))
-        if request.method == "GET":
-            years = sql_provider.get_all(Year)
-            groups, students = [], []
-            return render_template('admin.html', years=years, groups=groups, students=enumerate(students))     
-        if request.method == "POST":
-            data = request.get_json()
-            if 'refresh' in data and data['refresh'] == 'refresh':
-                student_id = data['student_id']
-                student = sql_provider.get(Student, student_id)
-                return make_response(jsonify([student.rk1_score, student.rk2_score]), 200)
-            return make_response('', 400)
+        years = sql_provider.get_all(Year)
+        groups, students = [], []
+        return render_template('admin.html', years=years, groups=groups, students=enumerate(students))     
     
-    @app.route('/admin/year', methods=['GET'])
-    def get_year():
+    @app.route('/admin/view_year', methods=['GET'])
+    def view_year():
         year_id = request.args.get('year')
         group_id = request.args.get('group')
         if year_id and not group_id:
@@ -188,8 +180,8 @@ def init_controllers(app):
             return make_response(json.dumps(jsonfied_groups), 200)
         return make_response('', 400) 
 
-    @app.route('/admin/group', methods=['GET'])
-    def get_group():
+    @app.route('/admin/view_group', methods=['GET'])
+    def view_group():
         year_id = request.args.get('year')
         group_id = request.args.get('group')
         if year_id and group_id:
@@ -202,7 +194,7 @@ def init_controllers(app):
             return make_response(json.dumps(jsonfied_students), 200)   
         return make_response('', 400)
 
-    @app.route('/admin/group/create', methods=['POST'])
+    @app.route('/admin/create_group', methods=['POST'])
     def create_group():
         data = request.get_json()
         try:
@@ -221,7 +213,7 @@ def init_controllers(app):
         except Exception as err:
             return make_response(err, 500) 
     
-    @app.route('/admin/group/<int:group_id>', methods=['POST'])
+    @app.route('/admin/del_group/<int:group_id>', methods=['POST'])
     def del_group(group_id):
         data = request.get_json()
         try:
@@ -232,9 +224,8 @@ def init_controllers(app):
         except Exception as err:
             return make_response(err, 500) 
     
-    @app.route('/admin/student', methods=['GET'])
-    def view_student():
-        student_id = request.args.get('student')
+    @app.route('/admin/view_student/<int:student_id>', methods=['GET'])
+    def view_student(student_id):
         method = request.args.get('method')
         rk = request.args.get('rk')
         if method and method == 'view':
@@ -253,7 +244,15 @@ def init_controllers(app):
             return make_response(json.dumps(jsonified_rk), 200)
         return make_response('', 400)
 
-    @app.route('/admin/student/<int:student_id>', methods=['POST'])
+    @app.route('/admin/get_student/<int:student_id>', methods=['GET'])
+    def get_student(student_id):
+        refresh = request.args.get('refresh')
+        if refresh and refresh == 'yes':
+            student = sql_provider.get(Student, student_id)
+            return make_response(jsonify([student.rk1_score, student.rk2_score]), 200)
+        return make_response('', 400)
+
+    @app.route('/admin/del_student/<int:student_id>', methods=['POST'])
     def del_student(student_id):
         data = request.get_json()
         try:
@@ -264,7 +263,7 @@ def init_controllers(app):
         except Exception as err:
             return make_response(err, 500) 
 
-    @app.route('/admin/question/<int:question_id>', methods=['POST'])
+    @app.route('/admin/patch_question/<int:question_id>', methods=['POST'])
     def patch_question_score(question_id):
         data = request.get_json()
         try:
