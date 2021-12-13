@@ -26,7 +26,7 @@ def __rk2_task2_gen():
         TA2 = EsA2 - EiA2
         TA3 = EsA3 - EiA3
         TA4 = sqrt(TS**2 - TA1**2 - TA2**2 - TA3**2)
-        EmA4 = (EsA1 + EiA1)/2 + (EsA2 + EiA2)/2 - (EsA3 + EiA3)/2 - (EsS + EiS)/2
+        EmA4 = (EsA1 + EiA1)/2 + (EsA2 + EiA2)/2 + (EsS + EiS)/2 - (EsA3 + EiA3)/2
         EsA4 = round(EmA4 + TA4/2)
         EiA4 = round(EmA4 - TA4/2)
         return {'Task': {'A1': A1, 'A2': A2, 'A3': A3, \
