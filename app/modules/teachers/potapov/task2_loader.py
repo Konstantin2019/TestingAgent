@@ -86,7 +86,7 @@ def __rk2_task2_gen():
         parsed_gear = __inner_gear_parse__(gear)
         check_lst = []                
         for g in gears:
-            if g.Fr <= F[parsed_gear['t']] and g.fr <= f[parsed_gear['k']]:
+            if g.Fr <= F[parsed_gear['t']] and g.fr <= f[parsed_gear['p']]:
                 check_lst.append('годно')
             else:
                 check_lst.append('брак')
