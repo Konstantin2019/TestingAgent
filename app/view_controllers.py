@@ -37,7 +37,8 @@ def init_controllers(app):
                 group = Group(group_name=auth_view.group.data, year_id=year_record.id)
                 group_id = sql_provider.set(group)
                 student = Student(surname=auth_view.surname.data, name=auth_view.name.data, \
-                                  patronymic=auth_view.patronymic.data, group_id=group_id, \
+                                  patronymic=auth_view.patronymic.data, email=auth_view.email.data,\
+                                  group_id=group_id, \
                                   rk1_status='Ready', rk1_remaining_time=store['time_for_rk1'], \
                                   rk2_status='Ready', rk2_remaining_time=store['time_for_rk2'])
                 student_id = sql_provider.set(student)
@@ -165,7 +166,8 @@ def init_controllers(app):
         if admin_login != app.config['ADMIN_LOGIN'] and admin_password != correct_hash_code:
             return redirect(url_for('admin_auth'))
         years = sql_provider.get_all(Year)
-        groups, students = [], []
+        groups = sql_provider.get_all(Group)
+        students = sql_provider.get_all(Student)
         return render_template('admin.html', years=years, groups=groups, students=enumerate(students))     
     
     @app.route('/admin/view_year', methods=['GET'])

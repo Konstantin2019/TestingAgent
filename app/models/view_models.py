@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms.validators import DataRequired, ValidationError
+from wtforms.validators import InputRequired, ValidationError, Email
 from wtforms import SelectField, StringField, SubmitField, PasswordField
 
 class NonValidatingSelectField(SelectField):
@@ -7,9 +7,10 @@ class NonValidatingSelectField(SelectField):
         pass
 
 class StudentAuth(FlaskForm):
-    surname = StringField(label=('Фамилия:'), validators=[DataRequired()])
-    name = StringField(label=('Имя:'), validators=[DataRequired()])
-    patronymic = StringField(label=('Отчество: '), validators=[DataRequired()])
+    surname = StringField('Фамилия:', [InputRequired("Введите фамилию...")])
+    name = StringField('Имя:', [InputRequired("Введите имя...")])
+    patronymic = StringField('Отчество: ', [InputRequired("Введите отчество...")])
+    email = StringField('Email:', [InputRequired("Введите email..."), Email("Требуется ввести email")])
     group = NonValidatingSelectField(label=('Группа'), choices=[])
     test = NonValidatingSelectField(label=('Рубежный контроль'), choices=[('rk1','РК №1'), ('rk2','РК №2')])
     teacher = NonValidatingSelectField(label=('Преподаватель'), choices=[('potapov','Потапов К.Г.'), ('tumakova','Тумакова Е.В.')])

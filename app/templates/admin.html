@@ -63,7 +63,18 @@
                   <th scope="col"></th>
                </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+               {% for k, student in students %}
+               <tr>
+                  <td>{{ k + 1 }}</td>
+                  <td id="{{ student.id }}">{{ student.surname }}</td>
+                  <td id="{{ student.id }}">{{ student.name }}</td>
+                  <td id="{{ student.id }}">{{ student.patronymic}}</td>
+                  <td id="rk1_{{ student.id }}">{{ student.rk1_score }}</td>
+                  <td id="rk2_{{ student.id }}">{{ student.rk2_score }}</td>
+               </tr>
+               {% endfor %}
+            </tbody>
          </table>
       </div>
    </div>

@@ -30,9 +30,10 @@ class Student(db.Model):
     __tablename__ = 'students'
     id = db.Column(db.Integer, primary_key=True)
     surname = db.Column(db.String(32), nullable=False)
-    unique = synonym('surname')
     name = db.Column(db.String(32), nullable=False)
     patronymic = db.Column(db.String(32), nullable=True)
+    email = db.Column(db.String(64), nullable=False)
+    unique = synonym('email')
     group_id = db.Column(db.Integer, db.ForeignKey('groups.id', ondelete='CASCADE'), nullable=False)
     rk1_questions = db.relationship('RK1', backref='student', lazy=True, \
                                      cascade="all, delete", passive_deletes=True)
